@@ -16,14 +16,14 @@ class SplashScreen(ctk.CTk):
         y = (screen_height // 2) - (window_height // 2)
         self.geometry(f"{window_width}x{window_height}+{x}+{y}")
         
-        self.configure(fg_color="#111111")
+        self.configure(fg_color="#000000")
 
         # Label
         self.label = ctk.CTkLabel(
             self, 
-            text="GAMEVAULT", 
+            text="Paradise Launcher", 
             font=("Segoe UI", 32, "bold"), 
-            text_color="#238636"
+            text_color="#63cdff"
         )
         self.label.pack(expand=True, pady=(20, 0))
 
