@@ -1,0 +1,17 @@
+{
+    "api_key": "5f7b7a352ae31a15d4f5adde3bad2227",
+    "games_folder": "games",
+    "cache_folder": "cache",
+    "recent_file": "recent.json",
+    "ui": {
+        "title": "Paradise Launcher",
+        "scroll_speed": 100,
+        "primary_color": "#63cdff",
+        "bg_dark": "#000000",
+        "card_hover": "#242424",
+        "recent_limit": 8,
+        "grid_columns_base": 250,
+        "cover_size": [230, 345],
+        "recent_size": [195, 270]
+    }
+}
