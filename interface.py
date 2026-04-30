@@ -6,6 +6,7 @@ from io import BytesIO
 import json
 import os
 import sys
+from monitor import HardwareMonitor
 
 # This finds the folder where your .exe (or .py file) is located
 if getattr(sys, 'frozen', False):
@@ -34,7 +35,9 @@ class AppWindow(ctk.CTk):
             
         self.all_games = pre_scanned_games
         self.filtered_games = self.all_games
-        
+        # Initialize the hardware monitor
+        self.stats_provider = HardwareMonitor()
+
         # UI Setup
         self.setup_navbar()
         self.main_scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
@@ -50,11 +53,20 @@ class AppWindow(ctk.CTk):
         
         self.populate_games()
         self.bind("<Configure>", self.on_resize)
+        self.update_vitals_loop()
 
     def setup_navbar(self):
         self.navbar = ctk.CTkFrame(self, height=70, fg_color=cfg["ui"]["navbar_color"], corner_radius=0)
         self.navbar.pack(fill="x", side="top")
         self.navbar.pack_propagate(False)
+
+        self.vitals_label = ctk.CTkLabel(
+            self.navbar, 
+            text="Loading Vitals...", 
+            font=("Segoe UI", 12),
+            text_color="#AAAAAA" # Dimmer color so it doesn't distract from the logo
+        )
+        self.vitals_label.pack(side="left", padx=35)
 
         self.logo_label = ctk.CTkLabel(self.navbar, text=cfg["ui"]["title"], font=("Segoe UI", 26, "bold"), text_color=cfg["ui"]["logo_color"])
         self.logo_label.pack(side="left", padx=35)
@@ -65,6 +77,29 @@ class AppWindow(ctk.CTk):
         self.search_entry = ctk.CTkEntry(self.navbar, placeholder_text="Search library...", width=350)
         self.search_entry.pack(side="right", padx=35)
         self.search_entry.bind("<KeyRelease>", self.filter_search)
+
+    def update_vitals_loop(self):
+        """Fetches hardware data and updates the UI every second."""
+        try:
+            # This triggers the print statement you added to monitor.py
+            data = self.stats_provider.get_system_vitals()
+            
+            # Format the string for the navbar
+            # We show CPU, RAM, and GPU Load/Temp
+            vitals_text = (
+                f"CPU: {data['cpu']}%  |  "
+                f"RAM: {data['ram_pct']}%  |  "
+                f"GPU: {data['gpu_load']}% @ {data['gpu_temp']}°C"
+            )
+            
+            self.vitals_label.configure(text=vitals_text)
+            
+        except Exception as e:
+            print(f"Vitals Update Error: {e}")
+            self.vitals_label.configure(text="Vitals Error")
+
+        # Schedule the next update in 1000ms (1 second)
+        self.after(1000, self.update_vitals_loop)
 
     def toggle_color_settings(self):
         # create a small popup-style window for color settings 
@@ -239,3 +274,4 @@ class AppWindow(ctk.CTk):
     def on_resize(self, event):
         if event.widget == self:
             self.populate_games()
+

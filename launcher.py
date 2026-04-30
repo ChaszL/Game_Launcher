@@ -39,3 +39,4 @@ class GameLauncher:
         
         with open(r_file, "w") as f:
             json.dump(recent_list[:r_limit], f)
+
